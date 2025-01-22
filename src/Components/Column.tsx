@@ -14,6 +14,7 @@ type ColumnProps = {
   column: string;
   setCards: Dispatch<SetStateAction<CardType[]>>;
   deleteStatus: (status: string) => void;
+  statuses: {status: string, bgColor: string}[]
 };
 
 export const Column = ({
@@ -23,6 +24,7 @@ export const Column = ({
   column,
   setCards,
   deleteStatus,
+  statuses,
 }: ColumnProps) => {
   const [active, setActive] = useState(false);
 
@@ -174,6 +176,7 @@ export const Column = ({
               {...c}
               handleDragStart={handleDragStart}
               setCards={setCards}
+              statuses={statuses}
             />
           );
         })}

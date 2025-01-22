@@ -96,6 +96,7 @@ export const Board = () => {
             cards={cards}
             setCards={setCards}
             deleteStatus={deleteStatus}
+            statuses={statuses}
           />
         ))}
         <button

@@ -4,10 +4,15 @@ import { motion } from "motion/react";
 import { DropIndicator } from "./DropIndicator";
 import { CardType } from "../types/cardTypes";
 import { DragEvent as ReactDragEvent } from "react";
+import InputLabel from "@mui/material/InputLabel";
+import MenuItem from "@mui/material/MenuItem";
+import FormControl from "@mui/material/FormControl";
+import Select from "@mui/material/Select";
 
 type CardProps = CardType & {
   handleDragStart: (e: ReactDragEvent<HTMLDivElement>, card: CardType) => void;
   setCards: Dispatch<SetStateAction<CardType[]>>;
+  statuses: {status: string, bgColor: string}[]
 };
 
 export const Card = ({
@@ -17,11 +22,31 @@ export const Card = ({
   column,
   setCards,
   handleDragStart,
+  statuses,
 }: CardProps) => {
   const [open, setOpen] = useState(false);
+  const [newTitle, setNewTitle] = useState(title);
+  const [newDescription, setNewDescription] = useState(description);
+  const [newStatus, setNewStatus] = useState(column);
 
   const handleDelete = (cardId: string) => {
     setCards((prev) => prev.filter((c) => c.id !== cardId));
+  };
+
+  const handleUpdate = (cardID: string) => {
+    setCards((prevCards) =>
+      prevCards.map((card) =>
+        card.id === cardID
+          ? {
+              ...card,
+              title: newTitle,
+              description: newDescription,
+              column: newStatus,
+            }
+          : card
+      )
+    );
+    setOpen(false);
   };
   return (
     <>
@@ -32,30 +57,56 @@ export const Card = ({
         title="Task Details"
       >
         <div className="w-[400px]">
-          <div className="flex gap-1">
+          <div className="flex flex-col gap-1">
             <label htmlFor="title">Title:</label>
-            <p id="title" className="font-bold">
-              {title}
-            </p>
+            <input
+              type="text"
+              id="title"
+              value={newTitle}
+              onChange={(e) => setNewTitle(e.target.value)}
+              className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+              placeholder="Enter task title"
+              required
+            />
           </div>
-          <div className="flex gap-1">
+          <div className="flex flex-col gap-1">
             <label htmlFor="description">Description:</label>
-            <p id="description" className="font-bold">
-              {description}
-            </p>
+            <textarea
+              id="description"
+              value={newDescription}
+              onChange={(e) => setNewDescription(e.target.value)}
+              className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline h-32"
+              placeholder="Enter task description"
+            />
           </div>
-          <div className="flex gap-1">
-            <label htmlFor="status">Status:</label>
-            <p id="status" className=" font-bold">
-              {column}
-            </p>
+          <div className="flex flex-col gap-1 mt-2">
+            <FormControl fullWidth>
+              <InputLabel id="demo-simple-select-label">Status</InputLabel>
+              <Select
+                labelId="demo-simple-select-label"
+                id="demo-simple-select"
+                value={newStatus}
+                label="Age"
+                onChange={(e) => setNewStatus(e.target.value)}
+              >
+                {statuses.map((status) => (
+                  <MenuItem value={status.status}>{status.status}</MenuItem>
+                ))}
+              </Select>
+            </FormControl>
           </div>
-          <div className="mt-1.5 flex items-center justify-end gap-1.5">
+          <div className="flex items-center justify-between gap-1.5 mt-4">
             <button
               onClick={() => handleDelete(id)}
               className="px-3 py-1.5 text-red-800 bg-red-400 rounded-md font-semibold transition-colors hover:text-red-900"
             >
               Delete
+            </button>
+            <button
+              onClick={() => handleUpdate(id)}
+              className="px-3 py-1.5 text-white bg-blue-400 rounded-md font-semibold transition-colors hover:text-blue-100"
+            >
+              Save
             </button>
           </div>
         </div>
